@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>English Words Test</title>
+  </head>
+  <body>
+    <h1 class="title">Let's try!</h1>
+    <div class="container">
+      <h3 class="question-progress"></h3>
+      <h2 class="question-word"></h2>
+      <form class="word-test">
+        <input class="retry" type="button" value="Retry" style="display: none" />
+        <input class="my-answer" type="text" placeholder="type your answer" />
+        <input class="dummy" type="text" style="display:none;" />
+        <br />
+      </form>
+      <h2 class="result-content"></h2>
+    </div>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .title {
+        height: 10vh;
+        width: 100%;
+        text-align: center;
+        background: #364f6b;
+        color: #f5f5f5;
+      }
+      .container {
+        background: #f5f5f5;
+        color: #555;
+        height: 90vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .question-word,
+      .my-answer {
+        text-align: center;
+        margin-top: 1rem;
+        font-size: 2rem;
+      }
+      .score {
+        font-size: 3rem;
+      }
+      .my-answer {
+        color: #555;
+        height: 3rem;
+        border: solid 0px;
+        border-radius: 3px;
+        box-shadow: none;
+        outline: none;
+      }
+      .retry {
+        height: 3rem;
+        width: 100%;
+        background: #364f6b;
+        color: #fff;
+        font-size: 2rem;
+        border: solid 0px;
+        border-radius: 3px;
+        box-shadow: none;
+        outline: none;
+      }
+      .result-content {
+        height: 50%;
+        margin-top: 2rem;
+        text-align: center;
+      }
+      .result-correct {
+        font-size: 3rem;
+        color: #364f6b;
+      }
+      .result-wrong {
+        font-size: 3rem;
+        color: #903749;
+      }
+      .correct {
+        background: #3fc1c9;
+        color: #f5f5f5;
+      }
+      .wrong {
+        background: #ea5455;
+        color: #f5f5f5;
+      }
+      @media (max-height: 450px) {
+        .title {
+          display: none;
+          height: 0vh;
+        }
+        h2 {
+          font-size: 1.2rem;
+        }
+        h2 {
+          font-size: 1rem;
+        }
+        .result-content {
+          margin-top: 0.5rem;
+        }
+        .result-correct,
+        .result-wrong,
+        .question-word,
+        .my-answer {
+          margin-top: 0.5rem;
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+
+    <script>
+      const originalQuestions = [
+        { jp: '眠る', en: 'sleep' },
+        { jp: '病気の', en: 'sick' },
+        { jp: '見せる、説明する', en: 'show' },
+        { jp: 'イングランド', en: 'England' },
+        { jp: 'もし〜ならば', en: 'if' },
+        { jp: '聞く', en: 'hear' },
+        { jp: '祭り', en: 'festival' },
+        { jp: '背の高い', en: 'tall' },
+        { jp: '衣装、服装', en: 'costume' },
+        { jp: '灯台', en: 'lighthouse' },
+        { jp: '〜しませんか', en: "Why don't you" },
+        { jp: '遠くに', en: 'in the distance' },
+        { jp: '西洋の', en: 'Western' },
+        { jp: '雪', en: 'snow' },
+        { jp: '光景', en: 'sight' },
+        { jp: '夜は', en: 'at night' },
+        { jp: '雪まつり', en: 'the Snow Festival' },
+        { jp: '雪像', en: 'snow statue' },
+        { jp: '吉野ケ里歴史公園', en: 'Yoshinogari Historical' },
+        { jp: '楽器', en: 'musical instrument' },
+        { jp: 'ハンバーガー', en: 'hamburger' },
+        { jp: 'コーラ', en: 'cola' },
+        { jp: 'サイズ', en: 'size' },
+        { jp: 'willの過去形', en: 'would' },
+        { jp: '中間の', en: 'medium' },
+        { jp: '大きい', en: 'large' },
+        { jp: 'こちらで召し上がりますか', en: 'For here or to go' },
+        { jp: '〜はいかがですか', en: 'Would you like' },
+        { jp: '以上です', en: "That's all" },
+        { jp: 'フライドポテト', en: 'French fries' },
+        { jp: '白', en: 'white' },
+        { jp: '体験、経験', en: 'experience' },
+        { jp: '未来、将来', en: 'future' },
+        { jp: '特に', en: 'especially' },
+        { jp: '保育園', en: 'nursery' },
+        { jp: '球場、競技場', en: 'stadium' },
+        { jp: 'singの過去形', en: 'sang' },
+        { jp: '一度、一回', en: 'once' },
+        { jp: '注意、世話', en: 'care' },
+        { jp: 'すぐに', en: 'at once' },
+        { jp: '将来に', en: 'in the future' },
+        { jp: '〜したいと思う', en: 'would like to' },
+        { jp: '〜の世話をする', en: 'take care of' },
+        { jp: '〜山', en: 'Mt.' },
+        { jp: 'スーパーマーケット', en: 'supermarket' },
+        { jp: '店', en: 'store' },
+        { jp: 'standの過去形', en: 'stood' },
+        { jp: '立つ、立っている', en: 'stand' },
+        { jp: '歓迎する、迎える', en: 'welcome' },
+        { jp: '客', en: 'customer' },
+        { jp: '大声で', en: 'loudly' },
+        { jp: '挨拶', en: 'greeting' },
+        { jp: '伝達、コミュニケーション', en: 'communication' },
+        { jp: '家事', en: 'housework' },
+        { jp: 'バナナ', en: 'banana' },
+        { jp: '工場', en: 'factory' },
+        { jp: '技術者、エンジニア', en: 'engineer' },
+        { jp: '役に立つ', en: 'useful' },
+        { jp: '工学', en: 'engineering' },
+        { jp: '科目', en: 'subject' },
+        { jp: '食べる', en: 'eat' },
+        { jp: '飲む', en: 'drink' },
+        { jp: '赤', en: 'red' },
+        { jp: '黄色', en: 'yellow' },
+        { jp: 'オレンジ', en: 'orange' },
+        { jp: '甘い', en: 'sweet' },
+        { jp: '苦い', en: 'bitter' },
+        { jp: 'やわらかい', en: 'soft' },
+        { jp: '固い', en: 'hard' },
+        { jp: 'インタビューする', en: 'interview' },
+        { jp: '合唱部', en: 'chorus' },
+        { jp: 'ビデオ', en: 'video' },
+        { jp: 'ウェブサイト', en: 'website' },
+        { jp: 'もっと多くのこと', en: 'more' },
+        { jp: '活発な', en: 'active' },
+        { jp: '愛好者', en: 'lover' },
+        { jp: '〜を知る', en: 'find out' },
+        { jp: '〜したいと思う', en: 'wish' },
+        { jp: '終える', en: 'finish' },
+        { jp: 'いつか', en: 'some day' },
+        { jp: '泳ぐ', en: 'swim' },
+        { jp: 'スキーをする', en: 'ski' },
+        { jp: 'ピアノをひく', en: 'play the piano' },
+        { jp: '修理する、回復させる', en: 'fix' },
+        { jp: '環境', en: 'environment' },
+        { jp: '指導者', en: 'leader' },
+        { jp: '地球', en: 'earth' },
+        { jp: '一部、部分', en: 'part' },
+        { jp: 'thinkの過去形', en: 'thought' },
+        { jp: '生活様式', en: 'lifestyle' },
+        { jp: '植物', en: 'plant' },
+        { jp: 'あとで', en: 'later' },
+        { jp: '信念', en: 'belief' },
+        { jp: '地球環境サミット', en: 'the Earth Summit' },
+        { jp: 'ブラジルの都市', en: 'Rio' },
+        { jp: 'giveの過去形', en: 'gave' },
+        { jp: '与える', en: 'give' },
+        { jp: '悲しい', en: 'sad' },
+        { jp: 'ペン', en: 'pen' },
+        { jp: '傘', en: 'umbrella' },
+        { jp: 'コート', en: 'coat' },
+        { jp: 'よい、すばらしい', en: 'nice' },
+        { jp: '明るい、軽い', en: 'light' },
+        { jp: '暖める、暖かくする', en: 'warm' },
+        { jp: '人生、生活', en: 'life' },
+        { jp: 'becomeの過去形', en: 'became' },
+        { jp: '〜になる', en: 'become' },
+        { jp: '〜がなければ、〜しないで', en: 'without' },
+        { jp: '着ている', en: 'wear' },
+        { jp: 'チョコレート', en: 'chocolate' },
+        { jp: '中国', en: 'China' },
+        { jp: 'アフリカ', en: 'Africa' },
+        { jp: '南アメリカ、南米', en: 'South America' },
+        { jp: 'forgetの過去形', en: 'forgot' },
+        { jp: '忘れる', en: 'forget' },
+        { jp: '薬', en: 'medicine' },
+        { jp: '辞典、辞書', en: 'dictionary' },
+        { jp: 'いくつかの漫画', en: 'some comics' },
+        { jp: 'あなた自身に【を】', en: 'yourself' },
+        { jp: 'meetの過去形', en: 'met' },
+        { jp: '街路、通り', en: 'street' },
+        { jp: '豊かな、金持ちの', en: 'rich' },
+        { jp: '分かち合う', en: 'share' },
+        { jp: '欲張りな', en: 'greedy' },
+        { jp: 'マハトマガンジー', en: 'Mahatma Gandhi' },
+        { jp: 'ストリートチルドレン', en: 'street children' },
+        { jp: '地図', en: 'map' },
+        { jp: '近い', en: 'close' },
+        { jp: 'canの過去形', en: 'could' },
+        { jp: '真っ直ぐに', en: 'straight' },
+        { jp: '曲がる', en: 'turn' },
+        { jp: 'うれしい', en: 'glad' },
+        { jp: '〜していただけませんか', en: 'Could you' },
+        { jp: 'コンビニエンスストア', en: 'convenience store' },
+        { jp: '人、個人', en: 'person' },
+        { jp: '理由', en: 'reason' },
+        { jp: '想像力のある', en: 'creative' },
+        { jp: '独創的な', en: 'original' },
+        { jp: '風味', en: 'flavoring' },
+        { jp: 'ピザ', en: 'pizza' },
+        { jp: '親しみやすい', en: 'friendly' },
+        { jp: '外国人', en: 'foreigner' },
+        { jp: 'hearの過去形', en: 'heard' },
+        { jp: 'sellの過去形', en: 'sold' },
+        { jp: '茶色', en: 'brown' }
+      ];
+      let wrongQuestions = [];
+      let currentQuestions = [];
+
+      const container = document.querySelector('.container');
+      const questionProgress = document.querySelector('.question-progress');
+      const questionWord = document.querySelector('.question-word');
+      const myAnswer = document.querySelector('.my-answer');
+      const result = document.querySelector('.result-content');
+      const retryButton = document.querySelector('.retry');
+
+      function shuffleArray(sourceArray) {
+        const array = sourceArray.concat();
+        const arrayLength = array.length;
+        for (let i = arrayLength - 1; i >= 0; i--) {
+          const randomIndex = Math.floor(Math.random() * (i + 1));
+          [array[i], array[randomIndex]] = [array[randomIndex], array[i]];
+        }
+        return array;
+      }
+
+      let isFinish = false;
+      let hasRetry = false;
+
+      let currentQuestionNumber = 0;
+      let correctAnswerCount = 0;
+      function setQuestions(questions) {
+        currentQuestions = shuffleArray(questions);
+        nextQuestion(0);
+      }
+
+      function nextQuestion(currentQuestionNumber) {
+        if (isFinish) {
+          finishQuestion();
+          return;
+        }
+
+        questionProgress.innerHTML = `Question No ${currentQuestionNumber + 1}/${
+          currentQuestions.length
+        }</br>correct : ${correctAnswerCount} / wrong : ${wrongQuestions.length}`;
+        questionWord.innerHTML = currentQuestions[currentQuestionNumber].jp;
+        myAnswer.value = '';
+        myAnswer.focus();
+      }
+
+      function finishQuestion() {
+        questionWord.innerHTML = `Test is finish!<br/>
+                          <span class="score">Your score : ${Math.floor(
+                            (correctAnswerCount / currentQuestionNumber) * 100
+                          )}%</span>`;
+        hasRetry ? (retryButton.style.display = 'block') : (retryButton.style.display = 'none');
+      }
+
+      function checkAnswer() {
+        const correctAnswer = currentQuestions[currentQuestionNumber].en;
+        if (myAnswer.value === correctAnswer) {
+          //Correct answer
+          correctAnswerCount += 1;
+          result.innerHTML = `<span class="result-correct">Correct!</span><br/>`;
+          container.classList.add('correct');
+          container.classList.remove('wrong');
+        } else {
+          //Wrong answer
+          hasRetry = true;
+          wrongQuestions.push(currentQuestions[currentQuestionNumber]);
+          console.table(wrongQuestions);
+          result.innerHTML = `<span class="result-wrong">Wrong!</span><br/>`;
+          container.classList.add('wrong');
+          container.classList.remove('correct');
+        }
+
+        result.insertAdjacentHTML(
+          'beforeend',
+          `Question : ${questionWord.textContent}<br/>
+                            Your answer : ${myAnswer.value}<br/>
+                            Correct answer : ${correctAnswer}`
+        );
+
+        currentQuestionNumber += 1;
+        if (currentQuestionNumber >= currentQuestions.length) {
+          isFinish = true;
+          if (wrongQuestions.length) hasRetry = true;
+        }
+        nextQuestion(currentQuestionNumber);
+      }
+
+      //EventListers
+      window.addEventListener('load', function() {
+        setQuestions(originalQuestions);
+      });
+      myAnswer.addEventListener('keydown', function(e) {
+        if (isFinish == false && e.keyCode === 13) {
+          checkAnswer();
+        }
+      });
+      retryButton.addEventListener('click', () => {
+        currentQuestionNumber = 0;
+        correctAnswerCount = 0;
+        isFinish = false;
+        hasRetry = false;
+        retryButton.style.display = 'none';
+        setQuestions(wrongQuestions);
+        wrongQuestions = [];
+        result.innerHTML = '';
+        container.classList.remove('correct');
+        container.classList.remove('wrong');
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>English Words Test</title>
+  </head>
+  <body>
+    <h1 class="title">Let's try!</h1>
+    <div class="container">
+      <h3 class="question-progress"></h3>
+      <h2 class="question-word"></h2>
+      <form class="word-test">
+        <input class="retry" type="button" value="Retry" style="display: none" />
+        <input class="my-answer" type="text" placeholder="type your answer" />
+        <input class="dummy" type="text" style="display:none;" />
+        <br />
+      </form>
+      <h2 class="result-content"></h2>
+    </div>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .title {
+        height: 10vh;
+        width: 100%;
+        text-align: center;
+        background: #364f6b;
+        color: #f5f5f5;
+      }
+      .container {
+        background: #f5f5f5;
+        color: #555;
+        height: 90vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .question-word,
+      .my-answer {
+        text-align: center;
+        margin-top: 1rem;
+        font-size: 2rem;
+      }
+      .score {
+        font-size: 3rem;
+      }
+      .my-answer {
+        color: #555;
+        height: 3rem;
+        border: solid 0px;
+        border-radius: 3px;
+        box-shadow: none;
+        outline: none;
+      }
+      .retry {
+        height: 3rem;
+        width: 100%;
+        background: #364f6b;
+        color: #fff;
+        font-size: 2rem;
+        border: solid 0px;
+        border-radius: 3px;
+        box-shadow: none;
+        outline: none;
+      }
+      .result-content {
+        height: 50%;
+        margin-top: 2rem;
+        text-align: center;
+      }
+      .result-correct {
+        font-size: 3rem;
+        color: #364f6b;
+      }
+      .result-wrong {
+        font-size: 3rem;
+        color: #903749;
+      }
+      .correct {
+        background: #3fc1c9;
+        color: #f5f5f5;
+      }
+      .wrong {
+        background: #ea5455;
+        color: #f5f5f5;
+      }
+      @media (max-height: 450px) {
+        .title {
+          display: none;
+          height: 0vh;
+        }
+        h2 {
+          font-size: 1.2rem;
+        }
+        h2 {
+          font-size: 1rem;
+        }
+        .result-content {
+          margin-top: 0.5rem;
+        }
+        .result-correct,
+        .result-wrong,
+        .question-word,
+        .my-answer {
+          margin-top: 0.5rem;
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+
+    <script>
+      const originalQuestions = [
+        { jp: '軽食', en: 'snack' },
+        { jp: '〜より前に、〜する前に', en: 'before' },
+        { jp: 'お腹が空いて', en: 'hungry' },
+        { jp: '〜しなければならない', en: 'must' },
+        { jp: '待つ', en: 'wait' },
+        { jp: 'おばあさん', en: 'grandmother' },
+        { jp: 'おじいさん', en: 'grandfather' },
+        { jp: '〜を待つ', en: 'wait for' },
+        { jp: 'チャリティー、思いやり', en: 'charity' },
+        { jp: '町', en: 'town' },
+        { jp: '病院', en: 'hospital' },
+        { jp: '子供達', en: 'children' },
+        { jp: '子供', en: 'child' },
+        { jp: '始まる、始める', en: 'begin' },
+        { jp: '名簿', en: 'list' },
+        { jp: '午前', en: 'a.m' },
+        { jp: '午後', en: 'p.m' },
+        { jp: '支払う', en: 'pay' },
+        { jp: '金', en: 'money' },
+        { jp: '電話をかける、呼ぶ', en: 'call' },
+        { jp: 'くつ', en: 'shoe' },
+        { jp: '入り口、玄関', en: 'entrance' },
+        { jp: '〜をぬぐ', en: 'take off' },
+        { jp: 'もう一つの、もう一人の', en: 'another' },
+        { jp: '行事、出来事', en: 'event' },
+        { jp: '〜に反対して', en: 'against' },
+        { jp: '空腹、飢え', en: 'hunger' },
+        { jp: '参加する、加わる', en: 'join' },
+        { jp: '例', en: 'example' },
+        { jp: '距離', en: 'distance' },
+        { jp: '例えば(2words)', en: 'for example' },
+        { jp: '〜のことを考える(2words)', en: 'think of' },
+        { jp: '自分自身の', en: 'own' },
+        { jp: '売る', en: 'sell' },
+        { jp: '持ってくる', en: 'bring' },
+        { jp: '〜すべきである', en: 'should' },
+        { jp: '投げる', en: 'throw' },
+        { jp: 'あちらへ、離れて', en: 'away' },
+        { jp: '〜しませんか(3words)', en: "Why don't we" },
+        { jp: '〜を捨てる(2words)', en: 'throw away' },
+        { jp: '〜しましょうか(2words)', en: 'Shall we' },
+        { jp: '近ごろどうしてる？(2words)', en: "What's up?" },
+        { jp: '〜してくれませんか？(2words)', en: 'Will you?' },
+        { jp: '国', en: 'country' },
+        { jp: 'loseの過去形', en: 'lost' },
+        { jp: '失う', en: 'lose' },
+        { jp: '財布', en: 'wallet' },
+        { jp: '試験', en: 'test' },
+        { jp: '疲れて', en: 'tired' },
+        { jp: '雨が降る', en: 'rain' },
+        { jp: '問題', en: 'problem' },
+        { jp: '幸福な', en: 'happy' },
+        { jp: '起こる', en: 'happen' },
+        { jp: '種類', en: 'kind' },
+        { jp: '音楽家', en: 'musician' },
+        { jp: '問題ないですよ(2words)', en: 'No problem' },
+        { jp: 'やめてくれ(2words)', en: 'Come on' },
+        { jp: 'えっ', en: 'hey' },
+        { jp: 'スープ', en: 'soup' },
+        { jp: 'シーフード', en: 'seafood' },
+        { jp: '思い出す', en: 'remember' },
+        { jp: '第一人者', en: 'king' },
+        { jp: '旅行', en: 'travel' },
+        { jp: 'トマト', en: 'tomato' },
+        { jp: 'ソーセージ', en: 'sausage' },
+        { jp: 'ミートボール', en: 'meatball' },
+        { jp: '恐ろしい、ひどい', en: 'terrible' },
+        { jp: '恐れている', en: 'afraid' },
+        { jp: 'かわいそうな', en: 'poor' },
+        { jp: '物語', en: 'story' },
+        { jp: '飛んでいる', en: 'flying' },
+        { jp: '島', en: 'island' },
+        { jp: '馬', en: 'horse' },
+        { jp: '〜を恐れる(3words)', en: 'be afraid of' }
+      ];
+      let wrongQuestions = [];
+      let currentQuestions = [];
+
+      const container = document.querySelector('.container');
+      const questionProgress = document.querySelector('.question-progress');
+      const questionWord = document.querySelector('.question-word');
+      const myAnswer = document.querySelector('.my-answer');
+      const result = document.querySelector('.result-content');
+      const retryButton = document.querySelector('.retry');
+
+      function shuffleArray(sourceArray) {
+        const array = sourceArray.concat();
+        const arrayLength = array.length;
+        for (let i = arrayLength - 1; i >= 0; i--) {
+          const randomIndex = Math.floor(Math.random() * (i + 1));
+          [array[i], array[randomIndex]] = [array[randomIndex], array[i]];
+        }
+        return array;
+      }
+
+      let isFinish = false;
+      let hasRetry = false;
+
+      let currentQuestionNumber = 0;
+      let correctAnswerCount = 0;
+      function setQuestions(questions) {
+        currentQuestions = shuffleArray(questions);
+        nextQuestion(0);
+      }
+
+      function nextQuestion(currentQuestionNumber) {
+        if (isFinish) {
+          finishQuestion();
+          return;
+        }
+
+        questionProgress.innerHTML = `Question No ${currentQuestionNumber + 1}/${
+          currentQuestions.length
+        }</br>correct : ${correctAnswerCount} / wrong : ${wrongQuestions.length}`;
+        questionWord.innerHTML = currentQuestions[currentQuestionNumber].jp;
+        myAnswer.value = '';
+        myAnswer.focus();
+      }
+
+      function finishQuestion() {
+        questionWord.innerHTML = `Test is finish!<br/>
+                    <span class="score">Your score : ${Math.floor(
+                      (correctAnswerCount / currentQuestionNumber) * 100
+                    )}%</span>`;
+        hasRetry ? (retryButton.style.display = 'block') : (retryButton.style.display = 'none');
+      }
+
+      function checkAnswer() {
+        const correctAnswer = currentQuestions[currentQuestionNumber].en;
+        if (myAnswer.value === correctAnswer) {
+          //Correct answer
+          correctAnswerCount += 1;
+          result.innerHTML = `<span class="result-correct">Correct!</span><br/>`;
+          container.classList.add('correct');
+          container.classList.remove('wrong');
+        } else {
+          //Wrong answer
+          hasRetry = true;
+          wrongQuestions.push(currentQuestions[currentQuestionNumber]);
+          console.table(wrongQuestions);
+          result.innerHTML = `<span class="result-wrong">Wrong!</span><br/>`;
+          container.classList.add('wrong');
+          container.classList.remove('correct');
+        }
+
+        result.insertAdjacentHTML(
+          'beforeend',
+          `Question : ${questionWord.textContent}<br/>
+                      Your answer : ${myAnswer.value}<br/>
+                      Correct answer : ${correctAnswer}`
+        );
+
+        currentQuestionNumber += 1;
+        if (currentQuestionNumber >= currentQuestions.length) {
+          isFinish = true;
+          if (wrongQuestions.length) hasRetry = true;
+        }
+        nextQuestion(currentQuestionNumber);
+      }
+
+      //EventListers
+      window.addEventListener('load', function() {
+        setQuestions(originalQuestions);
+      });
+      myAnswer.addEventListener('keydown', function(e) {
+        if (isFinish == false && e.keyCode === 13) {
+          checkAnswer();
+        }
+      });
+      retryButton.addEventListener('click', () => {
+        currentQuestionNumber = 0;
+        correctAnswerCount = 0;
+        isFinish = false;
+        hasRetry = false;
+        retryButton.style.display = 'none';
+        setQuestions(wrongQuestions);
+        wrongQuestions = [];
+        result.innerHTML = '';
+        container.classList.remove('correct');
+        container.classList.remove('wrong');
+      });
+    </script>
+  </body>
+</html>
